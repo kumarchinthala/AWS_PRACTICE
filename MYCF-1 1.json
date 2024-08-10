@@ -1,0 +1,835 @@
+{
+    "Parameters": {
+        "myVPCcidrblock": {
+            "Type": "String",
+            "Default": "10.0.0.0/16"
+        },
+        "myPublicSubnet1cidr": {
+            "Type": "String",
+            "Default": "10.0.1.0/24"
+        },
+        "myPublicSubnet2cidr": {
+            "Type": "String",
+            "Default": "10.0.2.0/24"
+        },
+        "myPrivateSubnet1cidr": {
+            "Type": "String",
+            "Default": "10.0.3.0/24"
+        },
+        "myPrivateSubnet2cidr": {
+            "Type": "String",
+            "Default": "10.0.4.0/24"
+        },
+        "myDBSubnet1cidr": {
+            "Type": "String",
+            "Default": "10.0.5.0/24"
+        },
+        "myDBSubnet2cidr": {
+            "Type": "String",
+            "Default": "10.0.6.0/24"
+        },
+        "myAMIID": {
+            "Type": "String",
+            "Default": "ami-0ae8f15ae66fe8cda"
+        },
+        "InstanceType": {
+            "Type": "String",
+            "Default": "t2.micro"
+        },
+        "KeyName": {
+            "Type": "String",
+            "Default": "mylinux5thaug"
+        }
+    },
+    "Resources": {
+        "MyVPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "myVPCcidrblock"
+                },
+                "EnableDnsHostnames": true,
+                "EnableDnsSupport": true,
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "MyVPC"
+                    }
+                ]
+            }
+        },
+        "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "MYInternetGateway"
+                    }
+                ]
+            }
+        },
+        "InternetGatewayAttachment": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "InternetGatewayId": {
+                    "Ref": "InternetGateway"
+                },
+                "VpcId": {
+                    "Ref": "MyVPC"
+                }
+            }
+        },
+        "myPublicWebSubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "CidrBlock": {
+                    "Ref": "myPublicSubnet1cidr"
+                },
+                "MapPublicIpOnLaunch": true,
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "myPublicWebSubnet1"
+                    }
+                ]
+            }
+        },
+        "myPublicWebSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "CidrBlock": {
+                    "Ref": "myPublicSubnet2cidr"
+                },
+                "MapPublicIpOnLaunch": true,
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        1,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "myPublicWebSubnet2"
+                    }
+                ]
+            }
+        },
+        "myPrivateAppSubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "CidrBlock": {
+                    "Ref": "myPrivateSubnet1cidr"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "myPrivateAppSubnet1"
+                    }
+                ]
+            }
+        },
+        "myPrivateAppSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "CidrBlock": {
+                    "Ref": "myPrivateSubnet2cidr"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        1,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "myPrivateAppSubnet2"
+                    }
+                ]
+            }
+        },
+        "myPrivateDBSubnet1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "CidrBlock": {
+                    "Ref": "myDBSubnet1cidr"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "myPrivateDBSubnet1"
+                    }
+                ]
+            }
+        },
+        "myPrivateDBSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "CidrBlock": {
+                    "Ref": "myDBSubnet2cidr"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        1,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "myPrivateDBSubnet2"
+                    }
+                ]
+            }
+        },
+        "myPublicRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "myPublicRouteTable"
+                    }
+                ]
+            }
+        },
+        "myPrivateRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "myPrivateRouteTable"
+                    }
+                ]
+            }
+        },
+        "myRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": "InternetGatewayAttachment",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "myPublicRouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "InternetGateway"
+                }
+            }
+        },
+        "myPublicWebSubnet1RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "myPublicWebSubnet1"
+                },
+                "RouteTableId": {
+                    "Ref": "myPublicRouteTable"
+                }
+            }
+        },
+        "myPublicWebSubnet2RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "myPublicWebSubnet2"
+                },
+                "RouteTableId": {
+                    "Ref": "myPublicRouteTable"
+                }
+            }
+        },
+        "myPrivateAppSubnet1RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "myPrivateAppSubnet1"
+                },
+                "RouteTableId": {
+                    "Ref": "myPrivateRouteTable"
+                }
+            }
+        },
+        "myPrivateAppSubnet2RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "myPrivateAppSubnet2"
+                },
+                "RouteTableId": {
+                    "Ref": "myPrivateRouteTable"
+                }
+            }
+        },
+        "myPrivateDBSubnet1RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "myPrivateDBSubnet1"
+                },
+                "RouteTableId": {
+                    "Ref": "myPrivateRouteTable"
+                }
+            }
+        },
+        "myPrivateDBSubnet2RouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {
+                    "Ref": "myPrivateDBSubnet2"
+                },
+                "RouteTableId": {
+                    "Ref": "myPrivateRouteTable"
+                }
+            }
+        },
+        "NATGateway": {
+            "Type": "AWS::EC2::NatGateway",
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "NATGatewayEIP",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "myPublicWebSubnet1"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "MYNATGATEWAY"
+                    }
+                ]
+            }
+        },
+        "NATGatewayEIP": {
+            "Type": "AWS::EC2::EIP",
+            "Properties": {
+                "Domain": "vpc"
+            }
+        },
+        "RouteNATGateway": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "myPrivateRouteTable"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "NATGateway"
+                }
+            }
+        },
+        "BastionHostSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "DependsOn": "MyVPC",
+            "Properties": {
+                "GroupDescription": "Bastion sg to talk to web and app tier",
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 0,
+                        "ToPort": 65535,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "ApplicationLoadBalancerSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "DependsOn": "MyVPC",
+            "Properties": {
+                "GroupDescription": "http traffic to web tier",
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 80,
+                        "ToPort": 80,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+					  
+					
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 0,
+                        "ToPort": 65535,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "InternalLoadBalancerSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "DependsOn": "MyVPC",
+            "Properties": {
+                "GroupDescription": "Web tier traffic to app tier",
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 80,
+                        "ToPort": 80,
+                        "SourceSecurityGroupId": {
+                            "Ref": "WebtierSG"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "SourceSecurityGroupId": {
+                            "Ref": "WebtierSG"
+                        }
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 0,
+                        "ToPort": 65535,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "WebtierSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "DependsOn": "MyVPC",
+            "Properties": {
+                "GroupDescription": "ApplicationLoadBalancer to web tier",
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 80,
+                        "ToPort": 80,
+                        "SourceSecurityGroupId": {
+                            "Ref": "ApplicationLoadBalancerSG"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "SourceSecurityGroupId": {
+                            "Ref": "BastionHostSG"
+                        }
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 0,
+                        "ToPort": 65535,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "AppTierSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "DependsOn": "MyVPC",
+            "Properties": {
+                "GroupDescription": "Internal Load Balancer to AppTier",
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 80,
+                        "ToPort": 80,
+                        "SourceSecurityGroupId": {
+                            "Ref": "InternalLoadBalancerSG"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "SourceSecurityGroupId": {
+                            "Ref": "BastionHostSG"
+                        }
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 0,
+                        "ToPort": 65535,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "DatabaseSG": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "DependsOn": "MyVPC",
+            "Properties": {
+                "GroupDescription": "Apptier to database tier",
+                "VpcId": {
+                    "Ref": "MyVPC"
+                },
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 3306,
+                        "ToPort": 3306,
+                        "SourceSecurityGroupId": {
+                            "Ref": "AppTierSG"
+                        }
+                    }
+                ],
+                "SecurityGroupEgress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 0,
+                        "ToPort": 65535,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
+        },
+        "BastionHostEC2": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": {
+                    "Ref": "myAMIID"
+                },
+                "SecurityGroupIds": [{
+                    
+                       "Ref": "BastionHostSG"
+                    
+                }],
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "SubnetId": {
+                    "Ref": "myPublicWebSubnet1"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+            }
+        },
+        "myLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "ImageId": {
+                    "Ref": "myAMIID"
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "WebtierSG"
+                    }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/bash -x\n",
+                                "sudo yum update -y ",
+                                "sudo yum install -y httpd",
+                                "sudo systemctl start httpd",
+                                "sudo systemctl enable httpd",
+                                "sudo chmod -R 777 /var/www/html/",
+                                "sudo echo MY CF $(hostname -f) > /var/www/html/index.html",
+                                ""
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "myASG": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "LaunchConfigurationName": {
+                    "Ref": "myLaunchConfig"
+                },
+                "MaxSize": "1",
+                "MinSize": "1",
+                "DesiredCapacity": "1",
+                "VPCZoneIdentifier": [
+                    {
+                        "Ref": "myPublicWebSubnet1"
+                    },
+                    {
+                        "Ref": "myPublicWebSubnet2"
+                    }
+                ],
+                "TargetGroupARNs": [
+                    {
+                        "Ref": "WebTierALBTargetGroup"
+                    }
+                ]
+            }
+        },
+        "WebTierLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+			"DependsOn": "ApplicationLoadBalancerSG",
+            "Properties": {
+                "Subnets": [
+                    {
+                        "Ref": "myPublicWebSubnet1"
+                    },
+                    {
+                        "Ref": "myPublicWebSubnet2"
+                    }
+                ],
+                "SecurityGroups": [{
+                    "Ref": "ApplicationLoadBalancerSG"
+                }]
+            }
+        },
+        "WebTierListener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "WebTierALBTargetGroup"
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "WebTierLoadBalancer"
+                },
+                "Port": 80,
+                "Protocol": "HTTP"
+            }
+        },
+        "WebTierALBTargetGroup": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "HealthCheckIntervalSeconds": 30,
+                "HealthCheckTimeoutSeconds": 5,
+                "HealthyThresholdCount": 2,
+                "Port": 80,
+                "Protocol": "HTTP",
+                "UnhealthyThresholdCount": 5,
+                "VpcId": {
+                    "Ref": "MyVPC"
+                }
+            }
+        },
+        "AppTierASG": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "LaunchConfigurationName": {
+                    "Ref": "AppTierLaunchConfig"
+                },
+                "MaxSize": "1",
+                "MinSize": "1",
+                "DesiredCapacity": "1",
+                "VPCZoneIdentifier": [
+                    {
+                        "Ref": "myPrivateAppSubnet1"
+                    },
+                    {
+                        "Ref": "myPrivateAppSubnet2"
+                    }
+                ],
+                "TargetGroupARNs": [
+                    {
+                        "Ref": "AppTierTargetGroup"
+                    }
+                ]
+            }
+        },
+        "AppTierLaunchConfig": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "ImageId": {
+                    "Ref": "myAMIID"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "AppTierSG"
+                    }
+                ],
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                }
+            }
+        },
+        "AppTierLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "Properties": {
+                "Subnets": [
+                    {
+                        "Ref": "myPrivateAppSubnet1"
+                    },
+                    {
+                        "Ref": "myPrivateAppSubnet2"
+                    }
+                ],
+                "SecurityGroups":[ {
+                     "Ref":"InternalLoadBalancerSG"
+                }]
+            }
+        },
+        "AppTierListener": {
+            "Type": "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties": {
+                "DefaultActions": [
+                    {
+                        "Type": "forward",
+                        "TargetGroupArn": {
+                            "Ref": "AppTierTargetGroup"
+                        }
+                    }
+                ],
+                "LoadBalancerArn": {
+                    "Ref": "AppTierLoadBalancer"
+                },
+                "Port": 80,
+                "Protocol": "HTTP"
+            }
+        },
+        "AppTierTargetGroup": {
+            "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties": {
+                "HealthCheckIntervalSeconds": 30,
+                "HealthCheckTimeoutSeconds": 5,
+                "HealthyThresholdCount": 2,
+                "Port": 80,
+                "Protocol": "HTTP",
+                "UnhealthyThresholdCount": 5,
+                "VpcId": {
+                    "Ref": "MyVPC"
+                }
+            }
+        },
+        "Database": {
+            "Type": "AWS::RDS::DBInstance",
+            "Properties": {
+                "VPCSecurityGroups": [
+                    {
+                        "Ref": "DatabaseSG"
+                    }
+                ],
+                "AllocatedStorage": "20",
+                "PubliclyAccessible": true,
+                
+                "DBInstanceClass": "db.m5d.large",
+                "Engine": "MySQL",
+                "MasterUsername": "admin",
+                "MasterUserPassword": "admin123",
+                "DBSubnetGroupName": {
+                    "Ref": "DatabaseSubnetGroup"
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                }
+            }
+        },
+        "DatabaseSubnetGroup": {
+            "Type": "AWS::RDS::DBSubnetGroup",
+            "Properties": {
+                "DBSubnetGroupDescription": "Db Subnet Group",
+                "SubnetIds": [
+                    {
+                        "Ref": "myPrivateDBSubnet1"
+                    },
+                    {
+                        "Ref": "myPrivateDBSubnet2"
+                    }
+                ]
+            }
+        }
+    }
+}

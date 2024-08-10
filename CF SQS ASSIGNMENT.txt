@@ -1,0 +1,20 @@
+{
+	"Parameters": {
+		"S3BucketName":{
+			"Type": "String",
+			"Description": "Enter s3 bucket name as per AWS Policy"
+		}
+	},
+	"Resources": {
+		"S3BucketCreation":{
+			"Type": "AWS::S3::Bucket",
+			"Properties": {
+				"BucketName": {
+					"Ref":"S3BucketName"
+				}
+ 
+			}
+ 
+		}
+	}
+}
